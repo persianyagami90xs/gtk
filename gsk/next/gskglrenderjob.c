@@ -1983,6 +1983,8 @@ gsk_gl_render_job_visit_blurred_inset_shadow_node (GskGLRenderJob      *job,
                                            blur_radius * scale_y);
 
       gsk_next_driver_release_render_target (job->driver, render_target, TRUE);
+
+      gsk_next_driver_cache_texture (job->driver, &key, blurred_texture_id);
     }
 
   g_assert (blurred_texture_id != 0);
@@ -1995,8 +1997,6 @@ gsk_gl_render_job_visit_blurred_inset_shadow_node (GskGLRenderJob      *job,
     const float tx2 = 1.0 - tx1;
     const float ty1 = half_blur_extra * scale_y / texture_height;
     const float ty2 = 1.0 - ty1;
-
-    gsk_next_driver_cache_texture (job->driver, &key, blurred_texture_id);
 
     if (needs_clip)
       {
