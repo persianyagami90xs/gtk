@@ -206,7 +206,7 @@
  * in its available space, see the [property@Gtk.Widget:halign] and
  * [property@Gtk.Widget:valign] properties.
  *
- * The [property@Gtk.Label:width-chars[ and [property@Gtk.Label:max-width-chars]
+ * The [property@Gtk.Label:width-chars] and [property@Gtk.Label:max-width-chars]
  * properties can be used to control the size allocation of ellipsized or
  * wrapped labels. For ellipsizing labels, if either is specified (and less
  * than the actual text size), it is used as the minimum width, and the actual
