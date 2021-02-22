@@ -305,8 +305,8 @@ gsk_gl_texture_library_pack (GskGLTextureLibrary *self,
       entry->area.x2 = 1.0f;
       entry->area.y2 = 1.0f;
 
-      *out_packed_x = 0;
-      *out_packed_y = 0;
+      *out_packed_x = padding;
+      *out_packed_y = padding;
     }
 
   g_hash_table_insert (self->hash_table, key, entry);
