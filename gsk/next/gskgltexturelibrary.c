@@ -299,6 +299,7 @@ gsk_gl_texture_library_pack (GskGLTextureLibrary *self,
 
       entry->texture = texture;
       entry->is_atlased = FALSE;
+      entry->accessed = TRUE;
       entry->area.x = 0.0f;
       entry->area.y = 0.0f;
       entry->area.x2 = 1.0f;
