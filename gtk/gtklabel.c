@@ -57,12 +57,12 @@
 #include <string.h>
 
 /**
- * SECTION:gtklabel
- * @Short_description: A widget that displays a small to medium amount of text
- * @Title: GtkLabel
+ * GtkLabel:
  *
- * The `GtkLabel` widget displays a small amount of text. As the name
- * implies, most labels are used to label another widget such as a [class@Button].
+ * The `GtkLabel` widget displays a small amount of text.
+ *
+ * As the name implies, most labels are used to label another widget
+ * such as a [class@Button].
  *
  * ![An example GtkLabel](label.png)
  *
