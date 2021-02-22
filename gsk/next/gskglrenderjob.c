@@ -2568,6 +2568,7 @@ gsk_gl_render_job_visit_text_node (GskGLRenderJob      *job,
   float x = offset->x + job->offset_x;
   float y = offset->y + job->offset_y;
   GskGLGlyphLibrary *library = job->driver->glyphs;
+  GskGLCommandBatch *batch;
   GskGLProgram *program;
   int x_position = 0;
   GskGLGlyphKey lookup;
@@ -2593,7 +2594,7 @@ gsk_gl_render_job_visit_text_node (GskGLRenderJob      *job,
   lookup.scale = (guint) (text_scale * 1024);
 
   gsk_gl_render_job_begin_draw (job, program);
-
+  batch = gsk_gl_command_queue_get_batch (job->command_queue);
   vertices = gsk_gl_command_queue_add_n_vertices (job->command_queue, num_glyphs);
 
   /* We use one quad per character */
@@ -2601,12 +2602,12 @@ gsk_gl_render_job_visit_text_node (GskGLRenderJob      *job,
     {
       const PangoGlyphInfo *gi = &glyphs[i];
       const GskGLGlyphValue *glyph;
+      guint base = used * GSK_GL_N_VERTICES;
       float glyph_x, glyph_y, glyph_x2, glyph_y2;
       float tx, ty, tx2, ty2;
       float cx;
       float cy;
       guint texture_id;
-      guint base;
 
       if (gi->glyph == PANGO_GLYPH_EMPTY)
         continue;
@@ -2619,16 +2620,26 @@ gsk_gl_render_job_visit_text_node (GskGLRenderJob      *job,
       if (!gsk_gl_glyph_library_lookup_or_add (library, &lookup, &glyph))
         goto next;
 
-      base = used * GSK_GL_N_VERTICES;
-
       texture_id = GSK_GL_TEXTURE_ATLAS_ENTRY_TEXTURE (glyph);
-
-      g_assert (texture_id > 0);
 
       if G_UNLIKELY (last_texture != texture_id)
         {
+          g_assert (texture_id > 0);
+
           if G_LIKELY (last_texture != 0)
-            gsk_gl_render_job_split_draw (job);
+            {
+              guint vbo_offset = batch->draw.vbo_offset + batch->draw.vbo_count;
+
+              /* Since we have batched added our VBO vertices to avoid repeated
+               * calls to the buffer, we need to manually tweak the vbo offset
+               * of the new batch as otherwise it will point at the end of our
+               * vbo array.
+               */
+              gsk_gl_render_job_split_draw (job);
+              batch = gsk_gl_command_queue_get_batch (job->command_queue);
+              batch->draw.vbo_offset = vbo_offset;
+            }
+
           gsk_gl_program_set_uniform_texture (program,
                                               UNIFORM_SHARED_SOURCE, 0,
                                               GL_TEXTURE_2D,
@@ -2677,7 +2688,7 @@ gsk_gl_render_job_visit_text_node (GskGLRenderJob      *job,
       vertices[base+5].uv[0] = tx2;
       vertices[base+5].uv[1] = ty;
 
-      gsk_gl_command_queue_get_batch (job->command_queue)->draw.vbo_count += GSK_GL_N_VERTICES;
+      batch->draw.vbo_count += GSK_GL_N_VERTICES;
       used++;
 
 next:
