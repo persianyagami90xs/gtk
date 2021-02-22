@@ -275,8 +275,8 @@ gsk_gl_texture_library_pack (GskGLTextureLibrary *self,
       int packed_y;
 
       gsk_gl_texture_atlases_pack (self->driver,
-                                   width + padding,
-                                   height + padding,
+                                   padding + width + padding,
+                                   padding + height + padding,
                                    &atlas,
                                    &packed_x,
                                    &packed_y);
@@ -293,7 +293,9 @@ gsk_gl_texture_library_pack (GskGLTextureLibrary *self,
     }
   else
     {
-      GskGLTexture *texture = gsk_gl_texture_library_pack_one (self, width + 2, height + 2);
+      GskGLTexture *texture = gsk_gl_texture_library_pack_one (self,
+                                                               padding + width + padding,
+                                                               padding + height + padding);
 
       entry->texture = texture;
       entry->is_atlased = FALSE;
