@@ -817,6 +817,7 @@ gsk_next_driver_create_texture (GskNextDriver *self,
   g_hash_table_insert (self->textures,
                        GUINT_TO_POINTER (texture->texture_id),
                        texture);
+  texture->last_used_in_frame = self->current_frame_id;
   return texture;
 }
 
